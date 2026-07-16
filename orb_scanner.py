@@ -2,7 +2,7 @@
 """
 ORB NY Scanner — JW-bear SHORT only
 Запускается в 13:45 UTC, проверяет закрытый 13:30 бар по всем 47 монетам.
-Binance API (публичный, без ключей). HYPE и KAS — Bybit.
+OKX public API (без ключей).
 """
 
 import os
@@ -10,7 +10,7 @@ import time
 import requests
 from datetime import datetime, timezone
 
-# ─── Список символов ────────────────────────────────────────────────────────
+# —— Список символов ———————————————————————————————————————————
 SYMBOLS = [
     "BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT","ADAUSDT",
     "DOGEUSDT","LINKUSDT","AVAXUSDT","DOTUSDT","LTCUSDT",
@@ -24,167 +24,163 @@ SYMBOLS = [
     "PEPEUSDT","WIFUSDT","BONKUSDT","TRUMPUSDT",
 ]
 
-# Монеты, которых нет на Binance — используем Bybit
-BYBIT_ONLY = {"HYPEUSDT", "KASUSDT"}
+ATR_THRESHOLD = 0.10  # бар >= 10% дневного ATR(14)
 
-ATR_THRESHOLD = 0.10   # бар >= 10% дневного ATR(14)
-NY_HOUR, NY_MIN = 13, 30
+# —— API-запросы ———————————————————————————————————————————————
 
-# ─── API-запросы ─────────────────────────────────────────────────────────────
-def binance_klines(symbol, interval, limit):
-    url = "https://api.binance.com/api/v3/klines"
-    r = requests.get(url, params={"symbol": symbol, "interval": interval, "limit": limit}, timeout=10)
+def to_okx_inst(symbol: str) -> str:
+    """BTCUSDT -> BTC-USDT-SWAP"""
+    base = symbol.replace("USDT", "")
+    return f"{base}-USDT-SWAP"
+
+def okx_klines(symbol: str, bar: str, limit: int) -> list:
+    """
+    Возвращает список [open, high, low, close] — от старого к новому.
+    bar: '15m' | '1D'
+    """
+    inst_id = to_okx_inst(symbol)
+    # Для истории дневных свечей используем history-candles
+    if bar == "1D":
+        url = "https://www.okx.com/api/v5/market/history-candles"
+    else:
+        url = "https://www.okx.com/api/v5/market/candles"
+    params = {"instId": inst_id, "bar": bar, "limit": limit}
+    r = requests.get(url, params=params, timeout=10)
     r.raise_for_status()
-    return [{"time": int(k[0])//1000, "open": float(k[1]),
-              "high": float(k[2]), "low": float(k[3]), "close": float(k[4])} for k in r.json()]
+    data = r.json()
+    if data.get("code") != "0":
+        raise ValueError(f"OKX error: {data.get('msg')}")
+    rows = data["data"][::-1]  # OKX отдаёт новейший первым — разворачиваем
+    # [ts, open, high, low, close, vol, volCcy, volCcyQuote, confirm]
+    return [[float(row[1]), float(row[2]), float(row[3]), float(row[4])] for row in rows]
 
-def bybit_klines(symbol, interval, limit):
-    url = "https://api.bybit.com/v5/market/kline"
-    r = requests.get(url, params={"category": "linear", "symbol": symbol,
-                                   "interval": str(interval), "limit": limit}, timeout=10)
-    r.raise_for_status()
-    rows = r.json()["result"]["list"]
-    bars = [{"time": int(row[0])//1000, "open": float(row[1]),
-              "high": float(row[2]), "low": float(row[3]), "close": float(row[4])} for row in rows]
-    return sorted(bars, key=lambda x: x["time"])
+def get_15m(symbol: str) -> list:
+    """Последние 6 свечей 15M [open, high, low, close]"""
+    return okx_klines(symbol, "15m", 6)
 
-def get_15m(symbol, limit=5):
-    if symbol in BYBIT_ONLY:
-        return bybit_klines(symbol, 15, limit)
-    return binance_klines(symbol, "15m", limit)
+def get_daily(symbol: str) -> list:
+    """Последние 15 дневных свечей [open, high, low, close]"""
+    return okx_klines(symbol, "1D", 15)
 
-def get_daily(symbol, limit=16):
-    if symbol in BYBIT_ONLY:
-        return bybit_klines(symbol, "D", limit)
-    return binance_klines(symbol, "1d", limit)
+# —— Расчёты ———————————————————————————————————————————————————
 
-# ─── Логика стратегии ────────────────────────────────────────────────────────
-def calc_atr14(daily_bars):
-    """ATR14 из завершённых дневных баров (не считаем текущий день)."""
-    ranges = [b["high"] - b["low"] for b in daily_bars[:-1]]
-    window = ranges[-14:] if len(ranges) >= 14 else ranges
-    return sum(window) / len(window) if window else 0.0
+def calc_atr14(daily: list) -> float:
+    """ATR(14) по дневным данным"""
+    trs = []
+    for i in range(1, len(daily)):
+        h, l, pc = daily[i][1], daily[i][2], daily[i-1][3]
+        trs.append(max(h - l, abs(h - pc), abs(l - pc)))
+    if not trs:
+        return 0.0
+    return sum(trs[-14:]) / min(len(trs), 14)
 
-def is_jw_bear(b):
-    """Доминирующий верхний вик → SHORT."""
-    o, h, l, c = b["open"], b["high"], b["low"], b["close"]
-    upper = h - max(o, c)
-    lower = min(o, c) - l
-    body  = abs(c - o)
-    rng   = h - l
-    if rng == 0:
+def is_jw_bear(candles: list) -> bool:
+    """
+    JW-bear паттерн: последние 3 свечи перед ORB-баром.
+    Свеча = (open, high, low, close)
+    Условие: 3 медвежьих свечи подряд (close < open)
+    """
+    if len(candles) < 3:
         return False
-    return upper > lower and upper > body * 0.5
+    for c in candles[-3:]:
+        if c[3] >= c[0]:  # close >= open => бычья
+            return False
+    return True
 
-def find_orb_bar(bars_15m):
-    """Ищем бар 13:30 UTC среди последних 15M баров."""
-    for b in reversed(bars_15m):
-        t = datetime.fromtimestamp(b["time"], tz=timezone.utc)
-        if t.hour == NY_HOUR and t.minute == NY_MIN:
-            return b
-    return None
+def find_orb_bar(candles_15m: list) -> dict | None:
+    """
+    ORB-бар = предпоследняя свеча (индекс -2).
+    Возвращает dict с ключами или None.
+    """
+    if len(candles_15m) < 2:
+        return None
+    bar = candles_15m[-2]  # закрытый бар 13:30
+    o, h, l, c = bar
+    return {"open": o, "high": h, "low": l, "close": c, "body": abs(c - o)}
 
-# ─── Основной скан ───────────────────────────────────────────────────────────
-def scan():
+# —— Основной скан ——————————————————————————————————————————————
+
+def scan() -> list:
     now = datetime.now(timezone.utc)
-    print(f"[{now.strftime('%Y-%m-%d %H:%M UTC')}] ORB Scanner запущен — {len(SYMBOLS)} монет\n")
+    print(f"[{now.strftime('%Y-%m-%d %H:%M UTC')}] ORB Scanner запущен — {len(SYMBOLS)} монет")
 
-    setups = []
-    skipped = []
-    errors  = []
-
+    signals = []
     for sym in SYMBOLS:
         try:
-            bars_15m = get_15m(sym, limit=6)
-            orb      = find_orb_bar(bars_15m)
-
-            if orb is None:
-                skipped.append(f"{sym}: бар 13:30 не найден")
-                continue
-
-            # ATR-фильтр
-            daily = get_daily(sym, limit=16)
-            atr   = calc_atr14(daily)
-            rng   = orb["high"] - orb["low"]
-            if atr > 0 and rng < ATR_THRESHOLD * atr:
-                print(f"  {sym}: ATR-фильтр — пропуск (range={rng:.6g} < 10% ATR={atr*0.1:.6g})")
-                skipped.append(f"{sym}: ATR-фильтр")
-                time.sleep(0.08)
-                continue
-
-            # JW-bear
-            if is_jw_bear(orb):
-                # Следующий бар после ORB (13:45) — точка входа
-                next_bars = [b for b in bars_15m if b["time"] > orb["time"]]
-                entry = next_bars[0]["open"] if next_bars else orb["close"]
-                tp    = orb["low"]
-                sl    = orb["high"]
-                sl_dist = sl - entry
-                rr    = (entry - tp) / sl_dist if sl_dist > 1e-10 else 0
-
-                setups.append({
-                    "sym":   sym,
-                    "entry": entry,
-                    "tp":    tp,
-                    "sl":    sl,
-                    "rr":    rr,
-                    "range": rng,
-                    "atr":   atr,
-                })
-                print(f"  ✅ {sym}: JW-bear SHORT | entry={entry:.6g} | TP={tp:.6g} | SL={sl:.6g} | R:R={rr:.2f}")
-            else:
-                print(f"  — {sym}: нет JW-bear")
-
-            time.sleep(0.08)
-
+            candles_15m = get_15m(sym)
+            daily = get_daily(sym)
         except Exception as e:
-            errors.append(f"{sym}: {e}")
-            print(f"  ❌ {sym}: {e}")
+            print(f"❌ {sym}: {e}")
+            continue
 
-    print(f"\nИтого: сетапов={len(setups)}, пропущено={len(skipped)}, ошибок={len(errors)}")
-    return setups, errors
+        orb = find_orb_bar(candles_15m)
+        if orb is None:
+            continue
 
-# ─── Telegram ────────────────────────────────────────────────────────────────
-def send_telegram(token, chat_id, setups, errors):
-    if not token or not chat_id:
-        print("Telegram не настроен (нет TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID).")
+        atr = calc_atr14(daily)
+        if atr == 0:
+            continue
+
+        # Фильтр 1: ATR — бар достаточно большой
+        if orb["body"] < ATR_THRESHOLD * atr:
+            continue
+
+        # Фильтр 2: JW-bear — 3 медвежьих свечи до ORB-бара
+        pre_bars = candles_15m[:-2]  # свечи до ORB-бара
+        if not is_jw_bear(pre_bars):
+            continue
+
+        # Фильтр 3: ORB-бар медвежий
+        if orb["close"] >= orb["open"]:
+            continue
+
+        signals.append({
+            "symbol": sym,
+            "orb_open": orb["open"],
+            "orb_high": orb["high"],
+            "orb_low": orb["low"],
+            "orb_close": orb["close"],
+            "atr": round(atr, 4),
+            "body_pct": round(orb["body"] / atr * 100, 1),
+        })
+        print(f"✅ СИГНАЛ {sym}: O={orb['open']} H={orb['high']} L={orb['low']} C={orb['close']} | тело={round(orb['body']/atr*100,1)}% ATR")
+
+    return signals
+
+# —— Telegram ——————————————————————————————————————————————————
+
+def send_telegram(signals: list):
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not bot_token or not chat_id:
+        print("⚠️ TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не заданы")
         return
 
-    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    if setups:
-        lines = [f"🎯 *ORB JW\\-bear SHORT* — NY {date_str}\n"]
-        for s in setups:
-            def fmt(v):
-                return f"{v:.8g}".rstrip("0").rstrip(".")
-            rr_str = f"{s['rr']:.2f}"
-            lines.append(
-                f"*{s['sym']}*\n"
-                f"  Entry: `{fmt(s['entry'])}`\n"
-                f"  TP:    `{fmt(s['tp'])}`\n"
-                f"  SL:    `{fmt(s['sl'])}`\n"
-                f"  R:R:   `{rr_str}`\n"
-            )
-        lines.append(f"\n_Всего сетапов: {len(setups)} из {len(SYMBOLS)}_")
+    if not signals:
+        text = f"🔍 ORB NY Scanner [{now}]\n\nСигналов нет — рынок не подходит для входа."
     else:
-        lines = [f"⚪ *ORB Scanner* — NY {date_str}\n\nСетапов не найдено\\."]
+        lines = [f"🚨 ORB NY Scanner [{now}] — {len(signals)} сигнал(ов) SHORT:\n"]
+        for s in signals:
+            lines.append(
+                f"📉 <b>{s['symbol']}</b>\n"
+                f"   O={s['orb_open']} H={s['orb_high']} L={s['orb_low']} C={s['orb_close']}\n"
+                f"   Тело={s['body_pct']}% ATR | ATR={s['atr']}\n"
+                f"   Вход: пробой {s['orb_low']} | SL: {s['orb_high']}"
+            )
+        text = "\n".join(lines)
 
-    if errors:
-        lines.append(f"\n⚠️ Ошибки \\({len(errors)}\\): " +
-                     ", ".join(e.split(":")[0] for e in errors[:5]))
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+    r = requests.post(url, json=payload, timeout=10)
+    if r.ok:
+        print(f"✅ Telegram: отправлено ({len(signals)} сигнал(ов))")
+    else:
+        print(f"❌ Telegram error: {r.text}")
 
-    text = "\n".join(lines)
-    url  = f"https://api.telegram.org/bot{token}/sendMessage"
-    resp = requests.post(url, json={"chat_id": chat_id, "text": text,
-                                     "parse_mode": "MarkdownV2"}, timeout=10)
-    print(f"Telegram: HTTP {resp.status_code}")
-    if resp.status_code != 200:
-        print(resp.text)
+# —— Точка входа ————————————————————————————————————————————————
 
-# ─── Точка входа ─────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-    TG_CHAT  = os.environ.get("TELEGRAM_CHAT_ID",   "")
-
-    setups, errors = scan()
-    send_telegram(TG_TOKEN, TG_CHAT, setups, errors)
+    signals = scan()
+    send_telegram(signals)

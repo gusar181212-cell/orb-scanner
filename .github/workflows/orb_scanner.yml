@@ -1,0 +1,29 @@
+name: ORB NY Scanner
+
+on:
+  schedule:
+    - cron: '45 13 * * *'   # 13:45 UTC каждый день (NY бар закрылся в 13:45)
+  workflow_dispatch:          # ручной запуск для теста
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run ORB Scanner
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python orb_scanner.py

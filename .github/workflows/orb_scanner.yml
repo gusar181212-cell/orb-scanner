@@ -2,7 +2,7 @@ name: ORB NY Scanner
 
 on:
   schedule:
-    - cron: '45 13 * * *'   # 13:45 UTC каждый день (NY бар закрылся в 13:45)
+        - cron: '48 13 * * *'   # 13:48 UTC (ORB-бар закрыт в 13:45)
   workflow_dispatch:          # ручной запуск для теста
 
 jobs:

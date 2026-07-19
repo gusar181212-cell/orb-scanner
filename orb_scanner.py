@@ -24,7 +24,7 @@ SYMBOLS = [
     "PEPEUSDT","WIFUSDT","BONKUSDT","TRUMPUSDT",
 ]
 
-ATR_THRESHOLD = 0.10  # бар >= 10% дневного ATR(14)
+ATR_THRESHOLD = 0.15  # бар >= 15% дневного ATR(14); бэктест 19.07.26: тело 10-15% ATR = WR 8%, -9R
 
 # —— API-запросы ———————————————————————————————————————————————
 

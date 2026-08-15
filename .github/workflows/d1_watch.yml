@@ -46,7 +46,11 @@ jobs:
         run: |
           git config user.name  "d1-watch"
           git config user.email "d1-watch@users.noreply.github.com"
-          git add -A d1_state.json d1_signals.jsonl 2>/dev/null || true
+          # ВАЖНО: добавлять ПООТДЕЛЬНОСТИ. git add с несколькими путями падает
+          # целиком, если хотя бы одного файла нет, и не сохраняется НИЧЕГО.
+          # d1_signals.jsonl появляется только при первом сигнале.
+          git add d1_state.json 2>/dev/null || true
+          git add d1_signals.jsonl 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "состояние не изменилось"
           else

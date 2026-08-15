@@ -1,0 +1,55 @@
+name: D1 Watch
+
+# Сканер модуля «Моментум D1 + режимный фильтр» (novaya-ts: +0.447R, PF 1.93, n=142).
+#
+# ЗАМЫСЕЛ РАСПИСАНИЯ:
+#   старт в 23:50 UTC = 02:50 МСК — на десять минут РАНЬШЕ закрытия дневного бара.
+#   Запас нужен потому, что GitHub ставит задачи в очередь и запускает с задержкой.
+#   Дальше скрипт сам ждёт закрытия бара, опрашивая биржу каждые 20 секунд,
+#   и стреляет ровно в 00:00 UTC (03:00 МСК). Время сигнала привязано к бару,
+#   а не к моменту старта задачи.
+
+on:
+  schedule:
+    - cron: '50 23 * * *'   # 02:50 МСК, за 10 минут до закрытия дневного бара
+  workflow_dispatch:         # ручной запуск для теста
+
+permissions:
+  contents: write            # нужно, чтобы сохранять состояние открытых позиций
+
+concurrency:
+  group: d1-watch            # два прогона одновременно испортят состояние
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run D1 Watch (ждёт закрытия дневного бара и стреляет)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python d1_watch.py --once
+
+      - name: Сохранить состояние открытых позиций
+        if: always()
+        run: |
+          git config user.name  "d1-watch"
+          git config user.email "d1-watch@users.noreply.github.com"
+          git add -A d1_state.json d1_signals.jsonl 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "состояние не изменилось"
+          else
+            git commit -m "d1: состояние на $(date -u +%Y-%m-%d)"
+            git push
+          fi

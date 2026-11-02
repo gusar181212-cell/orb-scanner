@@ -2,26 +2,26 @@ name: ORB NY Scanner
 
 on:
   schedule:
-        - cron: '48 13 * * *'   # 13:48 UTC (ORB-бар закрыт в 13:45)
-  workflow_dispatch:          # ручной запуск для теста
+    # 14:45 UTC круглый год. Исправленный orb_scanner.py сам считает бар открытия
+    # NYSE (09:30 ET) через zoneinfo, поэтому один cron работает и летом (бар 13:30 UTC,
+    # запуск +75 мин) и зимой (бар 14:30 UTC, запуск +15 мин) — в пределах 6ч истории.
+    # Сезонная смена cron больше не нужна.
+    - cron: '45 14 * * *'
+  workflow_dispatch:
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install requests
-
       - name: Run ORB Scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

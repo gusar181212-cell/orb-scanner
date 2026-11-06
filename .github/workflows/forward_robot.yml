@@ -1,0 +1,53 @@
+name: Forward Robot (крипта + металлы)
+
+# Единый код-агент форвард-теста: крипта (novaya-ts, раз в сутки сигнал + ежечасно
+# слежение за открытыми) и золото/серебро (xau-xag-v00, ежечасно). Подробности —
+# в заголовке forward_robot.py. Независим от Cowork-триггеров.
+
+on:
+  schedule:
+    - cron: '5 * * * *'   # ежечасно, на 5-й минуте (не в "круглый" час — меньше толкучки в очереди Actions)
+  workflow_dispatch:        # ручной запуск для теста
+
+permissions:
+  contents: write            # нужно, чтобы коммитить forward_calls.csv и robot_state.json обратно
+
+concurrency:
+  group: forward-robot       # два прогона одновременно испортят состояние/журнал
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run forward_robot.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python forward_robot.py
+
+      - name: Сохранить журнал и состояние
+        if: always()
+        run: |
+          git config user.name  "forward-robot"
+          git config user.email "forward-robot@users.noreply.github.com"
+          # добавлять ПООТДЕЛЬНОСТИ: git add с несколькими путями падает целиком,
+          # если хотя бы одного файла нет (урок из d1_watch.yml).
+          git add forward/forward_calls.csv 2>/dev/null || true
+          git add forward/robot_state.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "состояние не изменилось"
+          else
+            git commit -m "forward_robot: обновление на $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

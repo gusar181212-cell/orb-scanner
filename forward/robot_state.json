@@ -87,7 +87,11 @@
         "confirm_deadline_hour": 5,
         "confirm_date": "2026-11-06",
         "threshold": 52.10499954223633,
-        "csv_id": 8
+        "csv_id": 8,
+        "confirmed": false,
+        "real_entry": null,
+        "entered": true,
+        "confirm_ts": "2026-11-06T02:00:00+00:00"
       }
     }
   }

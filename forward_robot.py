@@ -495,9 +495,11 @@ def gold_sync_csv(rows, state, events):
         cand["csv_id"] = rid
 
     by_id = {int(r["id"]): r for r in rows if r.get("id", "").isdigit()}
-    for kind, key, cand in list(events):
-        if kind not in ("gold_confirm", "gold_close"):
+    for ev in list(events):
+        # в events лежат и крипто-события (7-8 полей), и золотые (3 поля): разбирать только золотые
+        if ev[0] not in ("gold_confirm", "gold_close"):
             continue
+        kind, key, cand = ev
         rid = cand.get("csv_id")
         if not rid or rid not in by_id:
             continue

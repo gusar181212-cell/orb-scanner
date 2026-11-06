@@ -1,0 +1,94 @@
+{
+  "crypto": {
+    "otkrytye": {
+      "BTC": {
+        "napravlenie": -1,
+        "vhod": 76087.4,
+        "sl": 79587.17857142857,
+        "tp": 69087.84285714285,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 1
+      },
+      "ETH": {
+        "napravlenie": -1,
+        "vhod": 2237.94,
+        "sl": 2379.647142857143,
+        "tp": 1954.5257142857142,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 2
+      },
+      "SOL": {
+        "napravlenie": -1,
+        "vhod": 89.33,
+        "sl": 96.11321428571428,
+        "tp": 75.76357142857144,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 3
+      },
+      "BNB": {
+        "napravlenie": -1,
+        "vhod": 690.03,
+        "sl": 730.7132142857142,
+        "tp": 608.6635714285715,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 4
+      },
+      "XRP": {
+        "napravlenie": -1,
+        "vhod": 1.2071,
+        "sl": 1.2888821428571429,
+        "tp": 1.0435357142857142,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 5
+      },
+      "DOGE": {
+        "napravlenie": -1,
+        "vhod": 0.07119,
+        "sl": 0.07657285714285714,
+        "tp": 0.06042428571428572,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 6
+      },
+      "ADA": {
+        "napravlenie": -1,
+        "vhod": 0.181,
+        "sl": 0.1976392857142857,
+        "tp": 0.14772142857142856,
+        "ts_vhoda": 1793836800,
+        "ts_proveren": 1793836800,
+        "barov": 0,
+        "csv_id": 7
+      }
+    },
+    "posledniy_den": 1793836800
+  },
+  "gold": {
+    "pending": {
+      "XAGUSD:2026-11-06T01:00:00+00:00": {
+        "instrument": "XAGUSD",
+        "direction": "LONG",
+        "entry": 51.72999954223633,
+        "sl": 51.44499969482422,
+        "tp1": 52.29999923706055,
+        "costs_r": 0.1062,
+        "candle3_ts": "2026-11-06T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-06",
+        "threshold": 52.10499954223633,
+        "csv_id": 8
+      }
+    }
+  }
+}

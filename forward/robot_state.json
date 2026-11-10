@@ -104,7 +104,15 @@
         "confirm_deadline_hour": 5,
         "confirm_date": "2026-11-10",
         "threshold": 4131.2001953125,
-        "csv_id": 9
+        "csv_id": 9,
+        "confirmed": true,
+        "real_entry": 4120.89990234375,
+        "entered": true,
+        "confirm_ts": "2026-11-10T02:00:00+00:00",
+        "closed": true,
+        "exit_ts": "2026-11-10T09:00:00+00:00",
+        "result_r": 1.8138,
+        "outcome": "TP"
       },
       "XAGUSD:2026-11-10T01:00:00+00:00": {
         "instrument": "XAGUSD",
@@ -117,7 +125,15 @@
         "confirm_deadline_hour": 5,
         "confirm_date": "2026-11-10",
         "threshold": 53.04999923706055,
-        "csv_id": 10
+        "csv_id": 10,
+        "confirmed": true,
+        "real_entry": 53.02000045776367,
+        "entered": true,
+        "confirm_ts": "2026-11-10T02:00:00+00:00",
+        "closed": true,
+        "exit_ts": "2026-11-10T12:00:00+00:00",
+        "result_r": 1.9365,
+        "outcome": "TP"
       }
     }
   }

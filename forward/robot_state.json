@@ -134,6 +134,19 @@
         "exit_ts": "2026-11-10T12:00:00+00:00",
         "result_r": 1.9365,
         "outcome": "TP"
+      },
+      "XAUUSD:2026-11-11T01:00:00+00:00": {
+        "instrument": "XAUUSD",
+        "direction": "LONG",
+        "entry": 4052.60009765625,
+        "sl": 4034.10009765625,
+        "tp1": 4089.60009765625,
+        "costs_r": 0.3384,
+        "candle3_ts": "2026-11-11T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-11",
+        "threshold": 4060.60009765625,
+        "csv_id": 12
       }
     }
   }

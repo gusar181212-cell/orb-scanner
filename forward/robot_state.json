@@ -7,8 +7,8 @@
         "sl": 79587.17857142857,
         "tp": 69087.84285714285,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 1
       },
       "ETH": {
@@ -17,8 +17,8 @@
         "sl": 2379.647142857143,
         "tp": 1954.5257142857142,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 2
       },
       "SOL": {
@@ -27,8 +27,8 @@
         "sl": 96.11321428571428,
         "tp": 75.76357142857144,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 3
       },
       "BNB": {
@@ -37,8 +37,8 @@
         "sl": 730.7132142857142,
         "tp": 608.6635714285715,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 4
       },
       "DOGE": {
@@ -47,8 +47,8 @@
         "sl": 0.07657285714285714,
         "tp": 0.06042428571428572,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 6
       },
       "ADA": {
@@ -57,8 +57,8 @@
         "sl": 0.1976392857142857,
         "tp": 0.14772142857142856,
         "ts_vhoda": 1793836800,
-        "ts_proveren": 1794268800,
-        "barov": 5,
+        "ts_proveren": 1794355200,
+        "barov": 6,
         "csv_id": 7
       },
       "AVAX": {
@@ -67,12 +67,12 @@
         "sl": 9.245142857142856,
         "tp": 6.637714285714287,
         "ts_vhoda": 1794268800,
-        "ts_proveren": 1794268800,
-        "barov": 0,
+        "ts_proveren": 1794355200,
+        "barov": 1,
         "csv_id": 11
       }
     },
-    "posledniy_den": 1794268800
+    "posledniy_den": 1794355200
   },
   "gold": {
     "pending": {
@@ -151,6 +151,32 @@
         "real_entry": null,
         "entered": true,
         "confirm_ts": "2026-11-11T02:00:00+00:00"
+      },
+      "XAUUSD:2026-11-12T01:00:00+00:00": {
+        "instrument": "XAUUSD",
+        "direction": "SHORT",
+        "entry": 3991.10009765625,
+        "sl": 4005.89990234375,
+        "tp1": 3961.50048828125,
+        "costs_r": 0.1578,
+        "candle3_ts": "2026-11-12T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-12",
+        "threshold": 3984.199951171875,
+        "csv_id": 13
+      },
+      "XAGUSD:2026-11-12T01:00:00+00:00": {
+        "instrument": "XAGUSD",
+        "direction": "SHORT",
+        "entry": 51.619998931884766,
+        "sl": 51.94499969482422,
+        "tp1": 50.96999740600586,
+        "costs_r": 0.0929,
+        "candle3_ts": "2026-11-12T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-12",
+        "threshold": 51.525001525878906,
+        "csv_id": 14
       }
     }
   }

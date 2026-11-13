@@ -1,26 +1,6 @@
 {
   "crypto": {
     "otkrytye": {
-      "BTC": {
-        "napravlenie": -1,
-        "vhod": 76087.4,
-        "sl": 79587.17857142857,
-        "tp": 69087.84285714285,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794441600,
-        "barov": 7,
-        "csv_id": 1
-      },
-      "ETH": {
-        "napravlenie": -1,
-        "vhod": 2237.94,
-        "sl": 2379.647142857143,
-        "tp": 1954.5257142857142,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794441600,
-        "barov": 7,
-        "csv_id": 2
-      },
       "SOL": {
         "napravlenie": -1,
         "vhod": 89.33,

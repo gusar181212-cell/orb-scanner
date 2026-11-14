@@ -1,16 +1,6 @@
 {
   "crypto": {
     "otkrytye": {
-      "SOL": {
-        "napravlenie": -1,
-        "vhod": 89.33,
-        "sl": 96.11321428571428,
-        "tp": 75.76357142857144,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794528000,
-        "barov": 8,
-        "csv_id": 3
-      },
       "BNB": {
         "napravlenie": -1,
         "vhod": 690.03,

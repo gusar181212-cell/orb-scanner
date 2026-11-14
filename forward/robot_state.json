@@ -1,16 +1,6 @@
 {
   "crypto": {
     "otkrytye": {
-      "BNB": {
-        "napravlenie": -1,
-        "vhod": 690.03,
-        "sl": 730.7132142857142,
-        "tp": 608.6635714285715,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794528000,
-        "barov": 8,
-        "csv_id": 4
-      },
       "DOGE": {
         "napravlenie": -1,
         "vhod": 0.07119,

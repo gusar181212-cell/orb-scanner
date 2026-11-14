@@ -1,16 +1,6 @@
 {
   "crypto": {
     "otkrytye": {
-      "ADA": {
-        "napravlenie": -1,
-        "vhod": 0.181,
-        "sl": 0.1976392857142857,
-        "tp": 0.14772142857142856,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794528000,
-        "barov": 8,
-        "csv_id": 7
-      },
       "AVAX": {
         "napravlenie": -1,
         "vhod": 8.376,

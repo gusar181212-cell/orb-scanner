@@ -1,16 +1,6 @@
 {
   "crypto": {
     "otkrytye": {
-      "DOGE": {
-        "napravlenie": -1,
-        "vhod": 0.07119,
-        "sl": 0.07657285714285714,
-        "tp": 0.06042428571428572,
-        "ts_vhoda": 1793836800,
-        "ts_proveren": 1794528000,
-        "barov": 8,
-        "csv_id": 6
-      },
       "ADA": {
         "napravlenie": -1,
         "vhod": 0.181,

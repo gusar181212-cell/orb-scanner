@@ -7,12 +7,12 @@
         "sl": 9.245142857142856,
         "tp": 6.637714285714287,
         "ts_vhoda": 1794268800,
-        "ts_proveren": 1794873600,
-        "barov": 7,
+        "ts_proveren": 1794960000,
+        "barov": 8,
         "csv_id": 11
       }
     },
-    "posledniy_den": 1794873600
+    "posledniy_den": 1794960000
   },
   "gold": {
     "pending": {

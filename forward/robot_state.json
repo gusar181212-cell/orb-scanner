@@ -215,6 +215,19 @@
         "exit_ts": "2026-11-19T03:00:00+00:00",
         "result_r": 1.9229,
         "outcome": "TP"
+      },
+      "XAGUSD:2026-11-23T01:00:00+00:00": {
+        "instrument": "XAGUSD",
+        "direction": "SHORT",
+        "entry": 41.94499969482422,
+        "sl": 42.42499923706055,
+        "tp1": 40.98500061035156,
+        "costs_r": 0.0511,
+        "candle3_ts": "2026-11-23T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-23",
+        "threshold": 41.79499816894531,
+        "csv_id": 20
       }
     }
   }

@@ -227,7 +227,15 @@
         "confirm_deadline_hour": 5,
         "confirm_date": "2026-11-23",
         "threshold": 41.79499816894531,
-        "csv_id": 20
+        "csv_id": 20,
+        "confirmed": true,
+        "real_entry": 41.44499969482422,
+        "entered": true,
+        "confirm_ts": "2026-11-23T02:00:00+00:00",
+        "closed": true,
+        "exit_ts": "2026-11-23T05:00:00+00:00",
+        "result_r": -1.0511,
+        "outcome": "SL"
       }
     }
   }

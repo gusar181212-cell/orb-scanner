@@ -248,7 +248,15 @@
         "confirm_deadline_hour": 5,
         "confirm_date": "2026-11-24",
         "threshold": 3651.60009765625,
-        "csv_id": 21
+        "csv_id": 21,
+        "confirmed": true,
+        "real_entry": 3639.300048828125,
+        "entered": true,
+        "confirm_ts": "2026-11-24T02:00:00+00:00",
+        "closed": true,
+        "exit_ts": "2026-11-24T08:00:00+00:00",
+        "result_r": 1.9037,
+        "outcome": "TP"
       }
     }
   }

@@ -1,7 +1,7 @@
 {
   "crypto": {
     "otkrytye": {},
-    "posledniy_den": 1795305600
+    "posledniy_den": 1795392000
   },
   "gold": {
     "pending": {
@@ -236,6 +236,19 @@
         "exit_ts": "2026-11-23T05:00:00+00:00",
         "result_r": -1.0511,
         "outcome": "SL"
+      },
+      "XAUUSD:2026-11-24T01:00:00+00:00": {
+        "instrument": "XAUUSD",
+        "direction": "SHORT",
+        "entry": 3654.5,
+        "sl": 3676.699951171875,
+        "tp1": 3610.10009765625,
+        "costs_r": 0.0963,
+        "candle3_ts": "2026-11-24T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-24",
+        "threshold": 3651.60009765625,
+        "csv_id": 21
       }
     }
   }

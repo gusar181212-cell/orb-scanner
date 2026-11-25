@@ -257,6 +257,32 @@
         "exit_ts": "2026-11-24T08:00:00+00:00",
         "result_r": 1.9037,
         "outcome": "TP"
+      },
+      "XAUUSD:2026-11-25T01:00:00+00:00": {
+        "instrument": "XAUUSD",
+        "direction": "LONG",
+        "entry": 3546.199951171875,
+        "sl": 3532.39990234375,
+        "tp1": 3573.800048828125,
+        "costs_r": 0.397,
+        "candle3_ts": "2026-11-25T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-25",
+        "threshold": 3553.89990234375,
+        "csv_id": 22
+      },
+      "XAGUSD:2026-11-25T01:00:00+00:00": {
+        "instrument": "XAGUSD",
+        "direction": "LONG",
+        "entry": 40.939998626708984,
+        "sl": 40.435001373291016,
+        "tp1": 41.94999313354492,
+        "costs_r": 0.1253,
+        "candle3_ts": "2026-11-25T01:00:00+00:00",
+        "confirm_deadline_hour": 5,
+        "confirm_date": "2026-11-25",
+        "threshold": 41.06999969482422,
+        "csv_id": 23
       }
     }
   }
